@@ -1,0 +1,14 @@
+<script>
+const token = localStorage.getItem('access_token');
+
+fetch('/api/portal/dashboard/user/', {
+  headers: {
+    'Authorization': 'Bearer ' + token
+  }
+})
+.then(res => res.json())
+.then(data => {
+  console.log('داشبورد:', data);
+})
+.catch(err => console.error('خطا:', err));
+</script>

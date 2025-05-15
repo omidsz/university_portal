@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>داشبورد عضو انجمن</title>
+  <style>
+    body { font-family: sans-serif; direction: rtl; padding: 20px; }
+    #dashboard { margin-top: 20px; background: #f3f3f3; padding: 15px; border-radius: 8px; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>داشبورد عضو انجمن</h2>
+  <div id="dashboard">در حال دریافت اطلاعات...</div>
+
+  <script>
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+      document.getElementById('dashboard').innerHTML = '<p class="error">لطفاً ابتدا وارد شوید.</p>';
+    } else {
+      fetch('/api/portal/dashboard/member/', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('دسترسی غیرمجاز یا نقش اشتباه');
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById('dashboard').innerHTML = `
+          <p><strong>پیام:</strong> ${data.message}</p>
+          <p><strong>نقش شما:</strong> ${data.role}</p>
+          <p><strong>عملیات مجاز:</strong></p>
+          <ul>
+            ${data.available_actions.map(action => `<li>${action}</li>`).join('')}
+          </ul>
+        `;
+      })
+      .catch(err => {
+        document.getElementById('dashboard').innerHTML = '<p class="error">خطا: ' + err.message + '</p>';
+      });
+    }
+  </script>
+</body>
+</html>

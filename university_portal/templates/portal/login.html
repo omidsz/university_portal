@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>ورود</title>
+</head>
+<body>
+  <h2>ورود به سیستم</h2>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="نام کاربری" required>
+    <input type="password" id="password" placeholder="رمز عبور" required>
+    <button type="submit">ورود</button>
+  </form>
+  <p id="status"></p>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      fetch('/api/accounts/token/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          username: document.getElementById('username').value,
+          password: document.getElementById('password').value
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.access) {
+          localStorage.setItem('access_token', data.access);
+          localStorage.setItem('refresh_token', data.refresh);
+          document.getElementById('status').innerText = 'ورود موفق بود';
+          window.location.href = '/users/'; // هدایت به داشبورد یا هر صفحه دیگر
+        } else {
+          document.getElementById('status').innerText = 'نام کاربری یا رمز عبور اشتباه است';
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        document.getElementById('status').innerText = 'خطا در ارتباط با سرور';
+      });
+    });
+  </script>
+</body>
+</html>

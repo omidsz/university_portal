@@ -1,0 +1,15 @@
+fetch('/api/portal/ideas/', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    title: 'عنوان مقاله',
+    content: 'متن کامل مقاله'
+  })
+})
+.then(res => res.json())
+.then(data => {
+  alert('ایده با موفقیت ارسال شد');
+});

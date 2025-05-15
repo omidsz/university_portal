@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>لیست کاربران</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+
+<h2>کاربران ثبت‌شده</h2>
+
+<table id="userTable">
+  <thead>
+    <tr><th>Username</th><th>Email</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+fetch('/api/accounts/api/users/')
+  .then(response => response.json())
+  .then(data => {
+    const tbody = document.querySelector('#userTable tbody');
+    data.forEach(user => {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${user.username}</td><td>${user.email}</td>`;
+      tbody.appendChild(row);
+    });
+  })
+  .catch(error => {
+    console.error('خطا در دریافت API:', error);
+  });
+</script>
+
+</body>
+</html>

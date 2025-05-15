@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>لیست اطلاعیه‌ها</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; direction: rtl; }
+    .card { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h2>اطلاعیه‌ها</h2>
+  <div id="announcements"></div>
+
+  <script>
+    fetch('/api/portal/announcements/')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('announcements');
+        data.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `<h3>${item.title}</h3><p>${item.content}</p>`;
+          container.appendChild(card);
+        });
+      })
+      .catch(err => console.error('خطا در دریافت اطلاعیه‌ها:', err));
+  </script>
+</body>
+</html>
