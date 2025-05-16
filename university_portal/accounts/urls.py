@@ -1,6 +1,5 @@
-from django.urls import path, include
+from django.urls import path
 from django.views.generic import TemplateView
-from rest_framework import routers
 
 
 from .views import (RegisterView, RegistePageView, show_register_page_view, CustomTokenView, UserPageView,
@@ -18,11 +17,11 @@ urlpatterns = [
     # مشاهده کاربران ثبت شده
     path('api/users/', UserListAPI.as_view(), name='user-list-api'),
     path('users/', UserPageView.as_view(), name='user_page'),
-    path('show-users-page/', showuserpage, name='show_user_page'),
+    #path('show-users-page/', showuserpage, name='show_user_page'),
     #
     path('api/signup/', RegisterView.as_view(), name='apisignup'),
     path('signup/', RegistePageView.as_view(), name='signup'),
-    path('show-signup-page/', show_register_page_view, name='show_signup_page'),
+    #path('show-signup-page/', show_register_page_view, name='show_signup_page'),
     #
     path('login-page/', login_page, name='login_page'),
     #

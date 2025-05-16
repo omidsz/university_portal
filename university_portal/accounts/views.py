@@ -1,6 +1,5 @@
-import json
-from rest_framework.generics import (ListAPIView,CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView)
 from rest_framework import generics, status
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User
@@ -23,11 +22,12 @@ from .serializers import UserSerializer
 ###################################################################################
 class UserListAPI(APIView):
     permission_classes = [AllowAny]
+    renderer_classes = [TemplateHTMLRenderer]
 
     def get(self, request):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, template_name='accounts/users.html')
 
 
 class UserPageView(generics.RetrieveAPIView):
@@ -47,6 +47,9 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
+
+
+
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -65,16 +68,19 @@ class RegisterView(generics.CreateAPIView):
 
 class RegistePageView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
+    renderer_classes = [TemplateHTMLRenderer]
 
     def get(self, request):
-        return Response({"message": "صفحه register"})
+        return Response({"message": "صفحه register"}, template_name='accounts/signup.html')
 
 def show_register_page_view(request):
     return render(request, 'accounts/signup.html')
 
+
 #################################################################################################
 def login_page(request):
     return render(request, 'accounts/login.html')
+
 
 ###############################################################################################
 class VerifyCodeAndRegisterAPIView(APIView):

@@ -1,40 +1,147 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="fa">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <title>لیست کاربران</title>-->
+<!--  <style>-->
+<!--    body { font-family: sans-serif; padding: 20px; }-->
+<!--    table { border-collapse: collapse; width: 100%; }-->
+<!--    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<h2>کاربران ثبت‌شده</h2>-->
+
+<!--<table id="userTable">-->
+<!--  <thead>-->
+<!--    <tr><th>Username</th><th>Email</th></tr>-->
+<!--  </thead>-->
+<!--  <tbody></tbody>-->
+<!--</table>-->
+
+<!--<script>-->
+<!--fetch('/api/accounts/api/users/')-->
+<!--  .then(response => response.json())-->
+<!--  .then(data => {-->
+<!--    const tbody = document.querySelector('#userTable tbody');-->
+<!--    data.forEach(user => {-->
+<!--      const row = document.createElement('tr');-->
+<!--      row.innerHTML = `<td>${user.username}</td><td>${user.email}</td>`;-->
+<!--      tbody.appendChild(row);-->
+<!--    });-->
+<!--  })-->
+<!--  .catch(error => {-->
+<!--    console.error('خطا در دریافت API:', error);-->
+<!--  });-->
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>لیست کاربران</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-  </style>
+<meta charset="UTF-8" />
+<title>لیست کاربران</title>
+<style>
+table {
+    width: 70%;
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #666;
+    padding: 8px 12px;
+    text-align: center;
+}
+th {
+    background-color: #eee;
+}
+</style>
 </head>
 <body>
-
-<h2>کاربران ثبت‌شده</h2>
-
-<table id="userTable">
-  <thead>
-    <tr><th>Username</th><th>Email</th></tr>
-  </thead>
-  <tbody></tbody>
+<h2 style="text-align:center;">کاربران</h2>
+<table id="users-table">
+    <thead>
+        <tr>
+            <th>نام کاربری</th>
+            <th>ایمیل</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td colspan="2">در حال بارگذاری...</td></tr>
+    </tbody>
 </table>
 
 <script>
-fetch('/api/accounts/api/users/')
-  .then(response => response.json())
-  .then(data => {
-    const tbody = document.querySelector('#userTable tbody');
-    data.forEach(user => {
-      const row = document.createElement('tr');
-      row.innerHTML = `<td>${user.username}</td><td>${user.email}</td>`;
-      tbody.appendChild(row);
-    });
-  })
-  .catch(error => {
-    console.error('خطا در دریافت API:', error);
-  });
-</script>
+async function fetchUsers() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        alert('لطفا ابتدا وارد شوید');
+        window.location.href = 'login.html';
+        return;
+    }
 
+    try {
+        const res = await fetch('http://localhost:8000/api/users/', {
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (res.status === 401) {
+            alert('توکن منقضی شده یا نامعتبر است. لطفا دوباره وارد شوید.');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        if (!res.ok) throw new Error('خطا در دریافت اطلاعات');
+
+        const users = await res.json();
+        renderTable(users);
+
+    } catch(err) {
+        const tbody = document.querySelector('#users-table tbody');
+        tbody.innerHTML = `<tr><td colspan="2" style="color:red;">${err.message}</td></tr>`;
+    }
+}
+
+function renderTable(users) {
+    const tbody = document.querySelector('#users-table tbody');
+    tbody.innerHTML = '';
+
+    if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="2">هیچ داده‌ای موجود نیست.</td></tr>';
+        return;
+    }
+
+    users.forEach(user => {
+        const tr = document.createElement('tr');
+        const tdUsername = document.createElement('td');
+        tdUsername.textContent = user.username;
+        const tdEmail = document.createElement('td');
+        tdEmail.textContent = user.email || '-';
+        tr.appendChild(tdUsername);
+        tr.appendChild(tdEmail);
+        tbody.appendChild(tr);
+    });
+}
+
+fetchUsers();
+</script>
 </body>
 </html>
+
+
+
